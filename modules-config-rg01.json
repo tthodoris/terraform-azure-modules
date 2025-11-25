@@ -1,0 +1,587 @@
+{
+  "modules": {
+    "storage_account": {
+      "enabled": false,
+      "count": 1,
+      "service_suffix": "sa",
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "",
+        "part4": "",
+        "part5": ""
+      },
+      "config": {
+        "account_tier": "Standard",
+        "account_replication_type": "LRS",
+        "account_kind": "StorageV2",
+        "access_tier": "Hot",
+        "large_file_share_enabled": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet"
+      }
+    },
+    "app_service": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "virtual_network": {
+      "enabled": false,
+      "count": 2,
+      "service_suffix": "vnet",
+      "naming_parts": [
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "network",
+          "part4": "main",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "network",
+          "part4": "aks",
+          "part5": ""
+        }
+      ],
+      "config": [
+        {
+          "address_space": [
+            "10.0.0.0/25"
+          ],
+          "subnets": [
+            {
+              "name": "vm-subnet",
+              "address_prefix": "10.0.0.0/28"
+            },
+            {
+              "name": "pgsql-subnet",
+              "address_prefix": "10.0.0.32/27",
+              "delegation": "Microsoft.DBforPostgreSQL/flexibleServers"
+            },
+            {
+              "name": "mysql-subnet",
+              "address_prefix": "10.0.0.64/27",
+              "delegation": "Microsoft.DBforMySQL/flexibleServers"
+            },
+            {
+              "name": "pe-subnet",
+              "address_prefix": "10.0.0.96/28"
+            }
+          ]
+        },
+        {
+          "address_space": [
+            "10.1.0.0/22"
+          ],
+          "subnets": [
+            {
+              "name": "aks-default-subnet",
+              "address_prefix": "10.1.0.0/23"
+            },
+            {
+              "name": "aks-additional-subnet",
+              "address_prefix": "10.1.2.0/23"
+            }
+          ]
+        }
+      ]
+    },
+    "key_vault": {
+      "enabled": false,
+      "count": 0,
+      "config": {
+        "sku_name": "standard",
+        "enabled_for_deployment": false,
+        "enabled_for_template_deployment": false,
+        "enabled_for_disk_encryption": false,
+        "purge_protection_enabled": false,
+        "public_network_access_enabled": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet"
+      }
+    },
+    "app_service_plan": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "container_registry": {
+      "enabled": false,
+      "count": 2,
+      "service_suffix": "acr",
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "",
+        "part4": "",
+        "part5": ""
+      },
+      "config": {
+        "sku": "Basic",
+        "admin_enabled": true,
+        "public_network_access_enabled": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet"
+      }
+    },
+    "kubernetes_cluster": {
+      "enabled": false,
+      "count": 1,
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "cluster",
+        "part4": "",
+        "part5": ""
+      },
+      "config": {
+        "kubernetes_version": "1.32.9",
+        "sku_tier": "Paid",
+        "node_pool_name": "defaultpool",
+        "node_count": 1,
+        "vm_size": "Standard_D2ads_v6",
+        "os_disk_size_gb": 30,
+        "enable_auto_scaling": false,
+        "min_count": 1,
+        "max_count": 2,
+        "vnet_index": 1,
+        "subnet_name": "aks-default-subnet",
+        "network_plugin": "azure",
+        "network_policy": "calico",
+        "pod_cidr": "172.25.0.0/16",
+        "service_cidr": "172.24.0.0/16",
+        "dns_service_ip": "172.24.0.10",
+        "docker_bridge_cidr": "172.17.0.1/16",
+        "private_cluster_enabled": true,
+        "enable_container_logs": true,
+        "enable_ingress_appgw": false,
+        "ingress_appgw_gateway_index": null,
+        "ingress_appgw_subnet_cidr": null,
+        "additional_node_pools": [
+          {
+            "name": "mypool",
+            "node_count": 2,
+            "vm_size": "Standard_D2ads_v6",
+            "os_disk_size_gb": 100,
+            "enable_auto_scaling": false,
+            "min_count": null,
+            "max_count": null,
+            "mode": "User",
+            "vnet_index": 1,
+            "subnet_name": "aks-additional-subnet",
+            "node_labels": {
+              "workload": "gpu"
+            },
+            "node_taints": [
+              "gpu=true:NoSchedule"
+            ]
+          }
+        ]
+      }
+    },
+    "aks_backup": {
+      "enabled": false,
+      "count": 1,
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "backup",
+        "part4": "aks",
+        "part5": ""
+      },
+      "config": {
+        "kubernetes_cluster_index": 0,
+        "snapshot_resource_group_name": "vmdb-dev-aks-snap-00",
+        "snapshot_resource_group_location": "northeurope",
+        "backup_vault_name": "vmdb-dev-aks-backup-00",
+        "backup_policy_name": "vmdb-dev-aks-policy-00",
+        "backup_instance_name": "vmdb-dev-aks-instance-00",
+        "storage_container_name": "aksbackup",
+        "backup_repeating_time_intervals": [
+          "R/2024-01-01T00:00:00Z/PT24H"
+        ],
+        "default_retention_duration": "P7D",
+        "volume_snapshot_enabled": true,
+        "cluster_scoped_resources_enabled": true,
+        "included_namespaces": [],
+        "excluded_namespaces": [],
+        "trusted_access_roles": [
+          "Microsoft.DataProtection/backupVaults/backup-operator"
+        ]
+      }
+    },
+    "sql_server": {
+      "enabled": false,
+      "count": 1,
+      "service_suffix": "sql",
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "",
+        "part4": "",
+        "part5": ""
+      },
+      "config": {
+        "version": "12.0",
+        "administrator_login": "sqladmin",
+        "administrator_login_password": "P@ssw0rd1234!",
+        "database_name": "appdb",
+        "database_collation": "SQL_Latin1_General_CP1_CI_AS",
+        "database_license_type": "LicenseIncluded",
+        "database_max_size_gb": 2,
+        "database_sku_name": "Basic",
+        "database_zone_redundant": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet"
+      }
+    },
+    "function_app": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "log_analytics_workspace": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "virtual_machine": {
+      "enabled": false,
+      "count": 1,
+      "service_suffix": "vm",
+      "naming_parts": {
+        "part1": "vmdb",
+        "part2": "dev",
+        "part3": "server",
+        "part4": "",
+        "part5": ""
+      },
+      "config": {
+        "vm_size": "Standard_D2ds_v6",
+        "os_disk_type": "Premium_LRS",
+        "os_disk_size_gb": 128,
+        "admin_username": "azureuser",
+        "admin_password": null,
+        "disable_password_authentication": true,
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts-gen2",
+        "version": "latest",
+        "network_interface_ids": null,
+        "vnet_index": 0,
+        "subnet_name": "vm-subnet",
+        "public_ip_enabled": true,
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "additional_managed_disks": [
+          {
+            "name": "data-disk-1",
+            "disk_size_gb": 256,
+            "storage_account_type": "Premium_LRS",
+            "caching": "ReadWrite"
+          },
+          {
+            "name": "data-disk-2",
+            "disk_size_gb": 512,
+            "storage_account_type": "StandardSSD_LRS",
+            "caching": "ReadOnly"
+          }
+        ]
+      }
+    },
+    "postgresql_flexible_server": {
+      "enabled": false,
+      "count": 1,
+      "service_suffix": "psql",
+      "naming_parts": {
+        "part1": "MIN01",
+        "part2": "RG100",
+        "part3": "",
+        "part4": "postgres",
+        "part5": ""
+      },
+      "config": {
+        "version": "14",
+        "administrator_login": "psqladmin",
+        "administrator_password": "P@ssw0rd1234!",
+        "zone": 1,
+        "backup_retention_days": 7,
+        "geo_redundant_backup_enabled": false,
+        "sku_name": "GP_Standard_D2ds_v4",
+        "storage_mb": 32768,
+        "maintenance_window": {
+          "day_of_week": 0,
+          "start_hour": 2,
+          "start_minute": 0
+        },
+        "vnet_index": 0,
+        "subnet_name": "pgsql-subnet",
+        "databases": [
+          {
+            "name": "appdb",
+            "charset": "UTF8",
+            "collation": "en_US.utf8"
+          }
+        ]
+      }
+    },
+    "mysql_flexible_server": {
+      "enabled": false,
+      "count": 0,
+      "config": {
+        "version": "8.0.21",
+        "administrator_login": "mysqladmin",
+        "administrator_password": "ChangeMe123!",
+        "zone": 1,
+        "backup_retention_days": 7,
+        "geo_redundant_backup_enabled": false,
+        "sku_name": "B_Standard_B1ms",
+        "storage_size_gb": 32,
+        "storage_iops": 360,
+        "storage_auto_grow_enabled": true,
+        "maintenance_window": {
+          "day_of_week": 0,
+          "start_hour": 2,
+          "start_minute": 0
+        },
+        "vnet_index": 0,
+        "subnet_name": "mysql-subnet",
+        "dns_zone_index": 1,
+        "databases": [
+          {
+            "name": "appdb",
+            "charset": "utf8mb4",
+            "collation": "utf8mb4_unicode_ci"
+          }
+        ]
+      }
+    },
+    "cosmosdb": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "azure_firewall": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "application_gateway": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "bastion": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "load_balancer": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "network_security_group": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "private_dns_zone": {
+      "enabled": false,
+      "count": 2,
+      "service_suffix": "dns",
+      "naming_parts": [
+        {
+          "part1": "",
+          "part2": "",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "",
+          "part2": "",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        }
+      ],
+      "config": [
+        {
+          "zone_name": "privatelink.postgres.database.azure.com",
+          "use_existing_zone": false,
+          "existing_zone_resource_group_name": null,
+          "existing_zone_name": null
+        },
+        {
+          "zone_name": null,
+          "use_existing_zone": true,
+          "existing_zone_resource_group_name": "TT-RG70",
+          "existing_zone_name": "privatelink.database.windows.net"
+        }
+      ]
+    },
+    "private_dns_zone_link": {
+      "enabled": false,
+      "count": 2,
+      "config": [
+        {
+          "registration_enabled": false,
+          "vnet_index": 0,
+          "dns_zone_index": 0
+        },
+        {
+          "registration_enabled": false,
+          "vnet_index": 0,
+          "dns_zone_index": 1
+        }
+      ]
+    },
+    "private_endpoint": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "public_ip": {
+      "enabled": true,
+      "count": 6,
+      "naming_parts": [
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        },
+        {
+          "part1": "MIN01",
+          "part2": "RG100",
+          "part3": "",
+          "part4": "",
+          "part5": ""
+        }
+      ],
+      "config": [
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        },
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        },
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        },
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        },
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        },
+        {
+          "allocation_method": "Static",
+          "sku": "Standard",
+          "domain_name_label": null,
+          "reverse_fqdn": null
+        }
+      ]
+    },
+    "vnet_peering": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "vpn_gateway": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "container_app": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "recovery_vault": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "event_hubs": {
+      "enabled": false,
+      "count": 0,
+      "config": {}
+    },
+    "vm_backup": {
+      "enabled": false,
+      "count": 1,
+      "service_suffix": "rsv",
+      "naming_parts": {
+        "part1": "vmdb",
+        "part2": "dev",
+        "part3": "backup",
+        "part4": "vm",
+        "part5": ""
+      },
+      "config": {
+        "virtual_machine_index": 0,
+        "recovery_vault_name": "vmdb-dev-vm-rsv-00",
+        "backup_policy_name": "vmdb-dev-vm-policy-00",
+        "backup_frequency": "Daily",
+        "backup_time": "23:00",
+        "daily_retention_count": 7,
+        "weekly_retention_count": 4,
+        "monthly_retention_count": 12,
+        "yearly_retention_count": 1
+      }
+    }
+  }
+}

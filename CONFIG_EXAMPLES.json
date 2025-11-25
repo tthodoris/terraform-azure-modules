@@ -1,0 +1,559 @@
+{
+  "CONFIG_EXAMPLES": {
+    "storage_account": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "account_tier": "Standard",
+        "account_replication_type": "LRS",
+        "account_kind": "StorageV2",
+        "access_tier": "Hot"
+      }
+    },
+    "app_service": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "linux_fx_version": "DOCKER|nginx:latest",
+        "always_on": true,
+        "http2_enabled": true,
+        "min_tls_version": "1.2",
+        "app_service_plan_index": 0,
+        "vnet_index": 0,
+        "subnet_name": "frontend"
+      }
+    },
+    "virtual_network": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "address_space": ["10.0.0.0/16"],
+        "subnets": [
+          {
+            "name": "frontend",
+            "address_prefix": "10.0.1.0/24"
+          },
+          {
+            "name": "backend",
+            "address_prefix": "10.0.2.0/24"
+          },
+          {
+            "name": "database",
+            "address_prefix": "10.0.3.0/24",
+            "delegation": "Microsoft.DBforMySQL/flexibleServers"
+          }
+        ]
+      }
+    },
+    "key_vault": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku_name": "standard",
+        "enabled_for_deployment": false,
+        "enabled_for_template_deployment": false,
+        "enabled_for_disk_encryption": false,
+        "purge_protection_enabled": false,
+        "public_network_access_enabled": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet"
+      }
+    },
+    "app_service_plan": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "kind": "Linux",
+        "reserved": true,
+        "sku_tier": "Basic",
+        "sku_size": "B1"
+      }
+    },
+    "container_registry": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku": "Basic",
+        "admin_enabled": true,
+        "public_network_access_enabled": false,
+        "enable_private_endpoint": true,
+        "private_endpoint_vnet_index": 0,
+        "private_endpoint_subnet_name": "pe-subnet",
+        "georeplication_locations": []
+      }
+    },
+    "kubernetes_cluster": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "kubernetes_version": "1.28",
+        "node_pool_name": "default",
+        "node_count": 3,
+        "vm_size": "Standard_D2s_v3",
+        "os_disk_size_gb": 30,
+        "enable_auto_scaling": true,
+        "min_count": 1,
+        "max_count": 5,
+        "vnet_index": 0,
+        "subnet_name": "aks-subnet",
+        "zones": ["1", "2", "3"],
+        "network_plugin": "azure",
+        "network_policy": "azure",
+        "service_cidr": "10.0.0.0/16",
+        "dns_service_ip": "10.0.0.10",
+        "docker_bridge_cidr": "172.17.0.1/16",
+        "private_cluster_enabled": true,
+        "private_dns_zone_id": null,
+        "enable_container_logs": true,
+        "log_analytics_workspace_id": null,
+        "enable_ingress_appgw": true,
+        "ingress_appgw_gateway_index": 0,
+        "ingress_appgw_gateway_id": null,
+        "ingress_appgw_gateway_name": null,
+        "ingress_appgw_subnet_id": null,
+        "ingress_appgw_subnet_cidr": null,
+        "ingress_appgw_subnet_vnet_index": null,
+        "ingress_appgw_subnet_name": null,
+        "additional_node_pools": [
+          {
+            "name": "gpu-pool",
+            "node_count": 2,
+            "vm_size": "Standard_NC6s_v3",
+            "os_disk_size_gb": 100,
+            "enable_auto_scaling": true,
+            "min_count": 1,
+            "max_count": 4,
+            "mode": "User",
+            "vnet_index": 0,
+            "subnet_name": "aks-gpu-subnet",
+            "zones": ["1", "2"],
+            "node_labels": {
+              "workload": "gpu",
+              "pool": "gpu"
+            },
+            "node_taints": [
+              "gpu=true:NoSchedule"
+            ]
+          },
+          {
+            "name": "spot-pool",
+            "node_count": 3,
+            "vm_size": "Standard_D2s_v3",
+            "os_disk_size_gb": 30,
+            "enable_auto_scaling": true,
+            "min_count": 1,
+            "max_count": 10,
+            "mode": "User",
+            "vnet_index": 0,
+            "subnet_name": "aks-subnet",
+            "zones": ["3"],
+            "node_labels": {
+              "workload": "spot",
+              "pool": "spot"
+            }
+          }
+        ]
+      }
+    },
+    "aks_backup": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "kubernetes_cluster_index": 0,
+        "snapshot_resource_group_name": "aks-backup-snapshots",
+        "snapshot_resource_group_location": "eastus",
+        "backup_vault_name": "aks-backup-vault",
+        "backup_policy_name": "aks-backup-policy",
+        "backup_instance_name": "aks-backup-instance",
+        "storage_container_name": "aksbackup",
+        "backup_repeating_time_intervals": [
+          "R/2024-01-01T00:00:00Z/PT12H"
+        ],
+        "default_retention_duration": "P14D",
+        "trusted_access_roles": [
+          "Microsoft.DataProtection/backupVaults/backup-operator"
+        ],
+        "included_namespaces": [
+          "prod"
+        ],
+        "excluded_namespaces": [
+          "kube-system"
+        ],
+        "label_selectors": [
+          "backup=true"
+        ],
+        "volume_snapshot_enabled": true,
+        "cluster_scoped_resources_enabled": true
+      }
+    },
+    "sql_server": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "version": "12.0",
+        "administrator_login": "sqladmin",
+        "administrator_login_password": "P@ssw0rd1234!",
+        "database_name": "mydb",
+        "database_collation": "SQL_Latin1_General_CP1_CI_AS",
+        "database_license_type": "LicenseIncluded",
+        "database_max_size_gb": 2,
+        "database_sku_name": "Basic",
+        "database_zone_redundant": false,
+        "vnet_index": 0,
+        "subnet_name": "database"
+      }
+    },
+    "function_app": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "app_service_plan_kind": "Linux",
+        "app_service_plan_reserved": true,
+        "app_service_plan_sku_tier": "Consumption",
+        "app_service_plan_sku_size": "Y1",
+        "function_app_version": "~4",
+        "storage_account_tier": "Standard",
+        "storage_account_replication_type": "LRS",
+        "app_service_plan_index": 0,
+        "storage_account_index": 0,
+        "vnet_index": 0,
+        "subnet_name": "function-subnet"
+      }
+    },
+    "log_analytics_workspace": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku": "PerGB2018",
+        "retention_in_days": 30
+      }
+    },
+    "virtual_machine": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "vm_size": "Standard_D2s_v3",
+        "os_disk_type": "Premium_LRS",
+        "os_disk_size_gb": 128,
+        "admin_username": "azureuser",
+        "admin_password": null,
+        "disable_password_authentication": true,
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts-gen2",
+        "version": "latest",
+        "network_interface_ids": null,
+        "vnet_index": 0,
+        "subnet_name": "vm-subnet",
+        "public_ip_enabled": true,
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "additional_managed_disks": [
+          {
+            "name": "data-disk-1",
+            "disk_size_gb": 256,
+            "storage_account_type": "Premium_LRS",
+            "caching": "ReadWrite"
+          },
+          {
+            "name": "data-disk-2",
+            "disk_size_gb": 512,
+            "storage_account_type": "StandardSSD_LRS",
+            "caching": "ReadOnly"
+          },
+          {
+            "name": "backup-disk",
+            "disk_size_gb": 1024,
+            "storage_account_type": "Standard_LRS",
+            "caching": "None",
+            "create_option": "Empty"
+          }
+        ]
+      }
+    },
+    "postgresql_flexible_server": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "version": "14",
+        "administrator_login": "psqladmin",
+        "administrator_password": "P@ssw0rd1234!",
+        "zone": 1,
+        "backup_retention_days": 7,
+        "geo_redundant_backup_enabled": false,
+        "sku_name": "B_Standard_B1ms",
+        "storage_mb": 32768,
+        "maintenance_window": {
+          "day_of_week": 0,
+          "start_hour": 2,
+          "start_minute": 0
+        },
+        "vnet_index": 0,
+        "subnet_name": "database",
+        "databases": [
+          {
+            "name": "appdb",
+            "charset": "UTF8",
+            "collation": "en_US.utf8"
+          }
+        ]
+      }
+    },
+    "mysql_flexible_server": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "version": "8.0.21",
+        "administrator_login": "mysqladmin",
+        "administrator_password": "P@ssw0rd1234!",
+        "zone": 1,
+        "backup_retention_days": 7,
+        "geo_redundant_backup_enabled": false,
+        "sku_name": "B_Standard_B1ms",
+        "storage_size_gb": 32,
+        "storage_iops": 360,
+        "storage_auto_grow_enabled": true,
+        "maintenance_window": {
+          "day_of_week": 0,
+          "start_hour": 2,
+          "start_minute": 0
+        },
+        "vnet_index": 0,
+        "subnet_name": "mysql-subnet",
+        "databases": [
+          {
+            "name": "appdb",
+            "charset": "utf8mb4",
+            "collation": "utf8mb4_unicode_ci"
+          }
+        ]
+      }
+    },
+    "cosmosdb": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "offer_type": "Standard",
+        "kind": "GlobalDocumentDB",
+        "consistency_level": "Session",
+        "max_interval_in_seconds": 5,
+        "max_staleness_prefix": 100,
+        "capabilities": ["EnableServerless"],
+        "is_virtual_network_filter_enabled": true,
+        "enable_automatic_failover": false,
+        "enable_multiple_write_locations": false,
+        "vnet_indexes": [0],
+        "subnet_names": ["cosmos-subnet"],
+        "databases": [
+          {
+            "name": "mydb",
+            "throughput": 400
+          }
+        ],
+        "containers": [
+          {
+            "name": "mycontainer",
+            "database_name": "mydb",
+            "partition_key_path": "/id",
+            "throughput": 400,
+            "indexing_mode": "consistent"
+          }
+        ]
+      }
+    },
+    "azure_firewall": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku_name": "AZFW_VNet",
+        "sku_tier": "Standard",
+        "public_ip_enabled": true,
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "vnet_index": 0,
+        "subnet_name": "AzureFirewallSubnet"
+      }
+    },
+    "application_gateway": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku_name": "Standard_v2",
+        "sku_tier": "Standard_v2",
+        "capacity": 2,
+        "public_ip_enabled": true,
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "private_ip_address": null,
+        "vnet_index": 0,
+        "subnet_name": "frontend"
+      }
+    },
+    "bastion": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "vnet_index": 0,
+        "subnet_name": "AzureBastionSubnet"
+      }
+    },
+    "load_balancer": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku": "Standard",
+        "public_ip_enabled": true,
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "private_ip_address": null,
+        "vnet_index": 0,
+        "subnet_name": "lb-subnet"
+      }
+    },
+    "network_security_group": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "security_rules": [
+          {
+            "name": "AllowSSH",
+            "priority": 1000,
+            "direction": "Inbound",
+            "access": "Allow",
+            "protocol": "Tcp",
+            "source_port_range": "*",
+            "destination_port_range": "22",
+            "source_address_prefix": "*",
+            "destination_address_prefix": "*"
+          },
+          {
+            "name": "AllowHTTP",
+            "priority": 1001,
+            "direction": "Inbound",
+            "access": "Allow",
+            "protocol": "Tcp",
+            "source_port_range": "*",
+            "destination_port_range": "80",
+            "source_address_prefix": "*",
+            "destination_address_prefix": "*"
+          }
+        ]
+      }
+    },
+    "private_dns_zone": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "zone_name": "privatelink.mysql.database.azure.com"
+      }
+    },
+    "private_dns_zone_link": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "registration_enabled": false,
+        "vnet_index": 0,
+        "dns_zone_index": 0
+      }
+    },
+    "private_endpoint": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "target_resource_id": "/subscriptions/.../resourceGroups/.../providers/Microsoft.Storage/storageAccounts/...",
+        "is_manual_connection": false,
+        "subresource_names": ["blob"],
+        "private_dns_zone_ids": null,
+        "vnet_index": 0,
+        "subnet_name": "private-endpoint-subnet"
+      }
+    },
+    "public_ip": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "allocation_method": "Static",
+        "sku": "Standard",
+        "domain_name_label": "myapp",
+        "reverse_fqdn": null
+      }
+    },
+    "vnet_peering": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "remote_virtual_network_id": "/subscriptions/.../resourceGroups/.../providers/Microsoft.Network/virtualNetworks/...",
+        "allow_virtual_network_access": true,
+        "allow_forwarded_traffic": false,
+        "allow_gateway_transit": false,
+        "use_remote_gateways": false,
+        "local_vnet_index": 0,
+        "remote_vnet_index": null
+      }
+    },
+    "vpn_gateway": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "gateway_type": "Vpn",
+        "vpn_type": "RouteBased",
+        "sku": "VpnGw1",
+        "public_ip_allocation_method": "Static",
+        "public_ip_sku": "Standard",
+        "vnet_index": 0,
+        "subnet_name": "GatewaySubnet"
+      }
+    },
+    "container_app": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "revision_mode": "Single",
+        "min_replicas": 1,
+        "max_replicas": 10,
+        "container_name": "myapp",
+        "container_image": "nginx:latest",
+        "container_cpu": 0.5,
+        "container_memory": "1Gi",
+        "environment_variables": {
+          "ENV": "production"
+        },
+        "external_ingress_enabled": true,
+        "target_port": 80,
+        "transport": "auto",
+        "log_analytics_workspace_id": null,
+        "vnet_index": 0,
+        "subnet_name": "container-app-subnet"
+      }
+    },
+    "recovery_vault": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku": "Standard",
+        "soft_delete_enabled": true
+      }
+    },
+    "event_hubs": {
+      "enabled": true,
+      "count": 1,
+      "config": {
+        "sku": "Standard",
+        "capacity": 1,
+        "auto_inflate_enabled": true,
+        "maximum_throughput_units": 2,
+        "event_hubs": [
+          {
+            "name": "myeventhub",
+            "partition_count": 2,
+            "message_retention": 1
+          }
+        ]
+      }
+    }
+  }
+}
+
